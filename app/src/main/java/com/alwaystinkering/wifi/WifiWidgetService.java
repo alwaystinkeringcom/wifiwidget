@@ -6,19 +6,34 @@ import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
 
 public class WifiWidgetService extends Service {
 
+    private SharedPreferences prefs;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        updateWidgetView(intent);
+
+        stopSelf();
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+
+    private void updateWidgetView(Intent intent) {
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(
                 Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifi = connManager
@@ -71,8 +86,6 @@ public class WifiWidgetService extends Service {
             remoteViews.setOnClickPendingIntent(R.id.wifiImage, pendingIntent);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
-        stopSelf();
-        return super.onStartCommand(intent, flags, startId);
     }
 
     @Nullable
