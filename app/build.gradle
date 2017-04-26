@@ -19,6 +19,14 @@ android {
     }
     productFlavors {
     }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def appId = android.defaultConfig.applicationId
+            def fileName = appId + "-" + variant.buildType.name + ".apk"
+            output.outputFile = new File(output.outputFile.parent, fileName.replace(".apk", "-${variant.versionName}.apk"))
+        }
+    }
+
 }
 
 dependencies {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Simple Wifi Widget</string>
+    <string name="app_name">Material WiFi Widget</string>
     <string name="network_placeholder">Network Name</string>
 
     <string name="pick_connected_color_text">Connected to a WiFi network</string>
