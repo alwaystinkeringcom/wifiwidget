@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
-import android.util.Log;
 
 public class WifiWidgetProvider extends AppWidgetProvider {
 
@@ -16,7 +15,7 @@ public class WifiWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
             int[] appWidgetIds) {
-        Log.w("WifiWidgetProvider", "onUpdate method called");
+
         // Get all ids
         ComponentName thisWidget = new ComponentName(context,
                 WifiWidgetProvider.class);
@@ -47,20 +46,5 @@ public class WifiWidgetProvider extends AppWidgetProvider {
         } else {
             super.onReceive(context, intent);
         }
-    }
-
-    @Override
-    public void onEnabled(Context context) {
-        super.onEnabled(context);
-    }
-
-    @Override
-    public void onDisabled(Context context) {
-        super.onDisabled(context);
-    }
-
-    @Override
-    public void onDeleted(Context context, int[] appWidgetIds) {
-        super.onDeleted(context, appWidgetIds);
     }
 }

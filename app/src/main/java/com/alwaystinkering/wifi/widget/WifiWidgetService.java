@@ -15,6 +15,7 @@ import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -22,6 +23,8 @@ import com.alwaystinkering.wifi.R;
 import com.alwaystinkering.wifi.WifiConfiguration;
 
 public class WifiWidgetService extends Service {
+
+    private static final String TAG = "WifiWidgetService";
 
     private SharedPreferences prefs;
 
@@ -40,18 +43,28 @@ public class WifiWidgetService extends Service {
     private void updateWidgetView(Intent intent) {
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(
                 Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifi = connManager
-                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         WifiManager wifiManager = (WifiManager) getApplicationContext()
                 .getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        boolean wifiEnabled = wifiManager.isWifiEnabled();
 
+        NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
+        boolean wifiConnected = false;
+        if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            wifiConnected = true;
+        }
+
+        Log.d(TAG, "WiFi Enabled: " + wifiEnabled + ", WiFi Connected: " + wifiConnected);
+
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         String ssid = "";
-        if (wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
+        if (wifiInfo != null && wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
             ssid = wifiInfo.getSSID();
-            ssid = ssid.replace("\"", "");
-            if (ssid.contains("unknown"))
-                ssid = "";
+            if (ssid != null) {
+                ssid = ssid.replace("\"", "");
+                if (ssid.contains("unknown")) {
+                    ssid = "";
+                }
+            }
         }
 
         int connectedColor = prefs.getInt(getString(R.string.pref_key_wifi_connected_color), 0xff333333);
@@ -77,35 +90,26 @@ public class WifiWidgetService extends Service {
             remoteViews.setInt(R.id.networkText, "setTextColor", textColor);
             remoteViews.setInt(R.id.networkText, "setVisibility", showSsid ? View.VISIBLE : View.GONE);
 
-            // Set the icon based on wifi state
-            if (wifi.isConnected() || !ssid.isEmpty()) {
+            // Set the icon and color based on wifi state
+            if (wifiEnabled) {
                 remoteViews.setImageViewResource(R.id.wifiImage,
                         R.drawable.wifi);
-                remoteViews.setInt(R.id.wifiImage, "setColorFilter", connectedColor);
+                if (wifiConnected) {
+                    remoteViews.setInt(R.id.wifiImage, "setColorFilter", connectedColor);
+                } else {
+                    remoteViews.setInt(R.id.wifiImage, "setColorFilter", disconnectedColor);
+                }
             } else {
                 remoteViews.setImageViewResource(R.id.wifiImage,
                         R.drawable.wifi_off);
                 remoteViews.setInt(R.id.wifiImage, "setColorFilter", offColor);
             }
 
-            // Register an onClickListener
+            // Open configuration on click of the widget
             Intent configIntent = new Intent(getApplicationContext(), WifiConfiguration.class);
             PendingIntent configPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, configIntent, 0);
             remoteViews.setOnClickPendingIntent(R.id.wifiImage, configPendingIntent);
 
-
-
-//            Intent clickIntent = new Intent(this.getApplicationContext(),
-//                    WifiWidgetProvider.class);
-//
-//            clickIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-//            clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
-//                    allWidgetIds);
-//
-//            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-//                    getApplicationContext(), 0, clickIntent,
-//                    PendingIntent.FLAG_UPDATE_CURRENT);
-//            remoteViews.setOnClickPendingIntent(R.id.wifiImage, pendingIntent);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
     }
