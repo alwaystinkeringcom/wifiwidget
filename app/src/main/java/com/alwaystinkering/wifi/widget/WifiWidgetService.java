@@ -1,5 +1,5 @@
 
-package com.alwaystinkering.wifi;
+package com.alwaystinkering.wifi.widget;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -15,7 +15,11 @@ import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.RemoteViews;
+
+import com.alwaystinkering.wifi.R;
+import com.alwaystinkering.wifi.WifiConfiguration;
 
 public class WifiWidgetService extends Service {
 
@@ -50,6 +54,12 @@ public class WifiWidgetService extends Service {
                 ssid = "";
         }
 
+        int connectedColor = prefs.getInt(getString(R.string.pref_key_wifi_connected_color), 0xff333333);
+        int disconnectedColor = prefs.getInt(getString(R.string.pref_key_wifi_disconnected_color), 0xff333333);
+        int offColor = prefs.getInt(getString(R.string.pref_key_wifi_off_color), 0xff333333);
+        int textColor = prefs.getInt(getString(R.string.pref_key_wifi_ssid_color), 0xff333333);
+        boolean showSsid = prefs.getBoolean(getString(R.string.pref_key_wifi_show_ssid), true);
+
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this
                 .getApplicationContext());
 
@@ -64,26 +74,38 @@ public class WifiWidgetService extends Service {
 
             // Set the text
             remoteViews.setTextViewText(R.id.networkText, ssid);
+            remoteViews.setInt(R.id.networkText, "setTextColor", textColor);
+            remoteViews.setInt(R.id.networkText, "setVisibility", showSsid ? View.VISIBLE : View.GONE);
+
+            // Set the icon based on wifi state
             if (wifi.isConnected() || !ssid.isEmpty()) {
                 remoteViews.setImageViewResource(R.id.wifiImage,
                         R.drawable.wifi);
+                remoteViews.setInt(R.id.wifiImage, "setColorFilter", connectedColor);
             } else {
                 remoteViews.setImageViewResource(R.id.wifiImage,
                         R.drawable.wifi_off);
+                remoteViews.setInt(R.id.wifiImage, "setColorFilter", offColor);
             }
 
             // Register an onClickListener
-            Intent clickIntent = new Intent(this.getApplicationContext(),
-                    WifiWidgetProvider.class);
+            Intent configIntent = new Intent(getApplicationContext(), WifiConfiguration.class);
+            PendingIntent configPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, configIntent, 0);
+            remoteViews.setOnClickPendingIntent(R.id.wifiImage, configPendingIntent);
 
-            clickIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-            clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
-                    allWidgetIds);
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                    getApplicationContext(), 0, clickIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.wifiImage, pendingIntent);
+
+//            Intent clickIntent = new Intent(this.getApplicationContext(),
+//                    WifiWidgetProvider.class);
+//
+//            clickIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+//            clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
+//                    allWidgetIds);
+//
+//            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+//                    getApplicationContext(), 0, clickIntent,
+//                    PendingIntent.FLAG_UPDATE_CURRENT);
+//            remoteViews.setOnClickPendingIntent(R.id.wifiImage, pendingIntent);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
     }

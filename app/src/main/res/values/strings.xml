@@ -3,8 +3,8 @@
     <string name="network_placeholder">Network Name</string>
 
     <string name="pick_connected_color_text">Connected to a WiFi network</string>
-    <string name="pick_disconnected_color_text">Choose a color while not connected to a network</string>
-    <string name="pick_off_color_text">Choose a color while wifi is off</string>
+    <string name="pick_disconnected_color_text">WiFi is disconnected</string>
+    <string name="pick_off_color_text">WiFi is off</string>
     <string name="show_network_checkbox_text">Display Network SSID</string>
 
     <!-- Preference Keys -->

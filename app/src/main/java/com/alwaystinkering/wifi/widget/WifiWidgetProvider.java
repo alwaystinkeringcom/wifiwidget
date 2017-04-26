@@ -1,5 +1,5 @@
 
-package com.alwaystinkering.wifi;
+package com.alwaystinkering.wifi.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -10,6 +10,8 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 
 public class WifiWidgetProvider extends AppWidgetProvider {
+
+    public static final String UPDATE_WIDGET = "com.alwaystinkering.wifi.UPDATE_WIDGET";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
@@ -33,7 +35,8 @@ public class WifiWidgetProvider extends AppWidgetProvider {
         final String action = intent.getAction();
         if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION) ||
                 action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION) ||
-                action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+                action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION) ||
+                action.equals(UPDATE_WIDGET)) {
 
             // update all widgets
             AppWidgetManager appWidgetManager = AppWidgetManager

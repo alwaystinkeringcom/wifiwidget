@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.alwaystinkering.wifi.view.IconColorPickerView
+<com.alwaystinkering.wifi.view.TextColorPickerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,7 +15,7 @@
             android:id="@+id/headerText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Connected"
+            android:text="SSID Name"
             android:textStyle="bold"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,21 +23,31 @@
             android:layout_marginTop="16dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
+            <CheckBox
+                android:id="@+id/showCheckbox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".1"/>
             <TextView
                 android:id="@+id/promptText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".75"
-                android:text="Connected to a WiFi network"/>
-            <ImageView
-                android:id="@+id/iconImage"
+                android:layout_weight=".65"
+                android:text="Display SSID"/>
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".25"
-                android:tint="@color/colorPrimary"
-                android:src="@drawable/wifi"/>
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/iconImage"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:tint="@color/colorPrimary"
+                    android:src="@drawable/square"/>
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>
 
-</com.alwaystinkering.wifi.view.IconColorPickerView>
+</com.alwaystinkering.wifi.view.TextColorPickerView>

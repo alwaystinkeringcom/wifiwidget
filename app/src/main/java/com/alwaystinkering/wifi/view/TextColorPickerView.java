@@ -1,3 +1,4 @@
+
 package com.alwaystinkering.wifi.view;
 
 import android.app.AlertDialog;
@@ -10,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,7 +21,7 @@ import com.alwaystinkering.wifi.R;
 import com.alwaystinkering.wifi.widget.WifiWidgetProvider;
 import com.rarepebble.colorpicker.ColorPickerView;
 
-public class IconColorPickerView extends LinearLayout {
+public class TextColorPickerView extends LinearLayout {
 
     private static final String TAG = "IconColorPickerView";
 
@@ -27,35 +30,42 @@ public class IconColorPickerView extends LinearLayout {
 
     private TextView headerView;
     private TextView promptText;
-    private ImageView iconImage;
+    private CheckBox checkBox;
+    private ImageView colorPreview;
 
-    public IconColorPickerView(Context context) {
+    public TextColorPickerView(Context context) {
         super(context);
     }
 
-    public IconColorPickerView(Context context, @Nullable AttributeSet attrs) {
+    public TextColorPickerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public IconColorPickerView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TextColorPickerView(Context context, @Nullable AttributeSet attrs,
+            int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public void initializeView(final String header, final String prompt, final String colorPrefKey, final int drawableResource) {
+    public void initializeView(final String header, final String prompt,
+            final String checkboxPrefKey, final String colorPrefKey) {
         this.colorPrefKey = colorPrefKey;
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
         final int currentColor = prefs.getInt(colorPrefKey, 0xff333333);
+        final boolean checkboxChecked = prefs.getBoolean(checkboxPrefKey, true);
 
         headerView = (TextView) findViewById(R.id.headerText);
         promptText = (TextView) findViewById(R.id.promptText);
-        iconImage = (ImageView) findViewById(R.id.iconImage);
+        checkBox = (CheckBox) findViewById(R.id.showCheckbox);
+        colorPreview = (ImageView) findViewById(R.id.iconImage);
 
         headerView.setText(header);
         promptText.setText(prompt);
-        iconImage.setImageResource(drawableResource);
-        iconImage.setColorFilter(currentColor);
 
-        iconImage.setOnClickListener(new OnClickListener() {
+        checkBox.setChecked(checkboxChecked);
+        colorPreview.setColorFilter(currentColor);
+
+        colorPreview.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 final ColorPickerView pickerView = new ColorPickerView(getContext());
@@ -67,16 +77,28 @@ public class IconColorPickerView extends LinearLayout {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 int newColor = pickerView.getColor();
                                 prefs.edit().putInt(colorPrefKey, newColor).apply();
-                                iconImage.setColorFilter(newColor);
+                                colorPreview.setColorFilter(newColor);
                                 updateWidget();
                             }
                         })
                         .show();
             }
         });
+        checkBox.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView,
+                            boolean isChecked) {
+                        prefs.edit()
+                                .putBoolean(checkboxPrefKey, isChecked)
+                                .apply();
+                        updateWidget();
+                    }
+                });
     }
 
     private void updateWidget() {
-        getContext().sendBroadcast(new Intent(WifiWidgetProvider.UPDATE_WIDGET));
+        getContext()
+                .sendBroadcast(new Intent(WifiWidgetProvider.UPDATE_WIDGET));
     }
 }
