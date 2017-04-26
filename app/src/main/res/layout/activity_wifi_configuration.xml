@@ -8,6 +8,16 @@
     android:padding="16dp"
     tools:context="com.alwaystinkering.wifi.WifiConfiguration">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Widget Color Configuration"
+
+        />
     <include
         android:id="@+id/connectedColorLayout"
         layout="@layout/layout_icon_color_picker" />

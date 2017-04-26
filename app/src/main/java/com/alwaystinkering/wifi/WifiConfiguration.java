@@ -22,6 +22,11 @@ public class WifiConfiguration extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_configuration);
+        try {
+            getSupportActionBar().hide();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
