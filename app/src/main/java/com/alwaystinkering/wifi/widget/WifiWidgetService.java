@@ -7,8 +7,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -118,9 +116,8 @@ public class WifiWidgetService extends Service {
         boolean connected = false;
 
         if (wifiInfo != null) {
-            Log.d(TAG, "Wifi Info: " + wifiInfo);
             // Check SSID
-            if (!wifiInfo.getSSID().contains("<unknown ssid>")) {
+            if (!wifiInfo.getSSID().contains("unknown")) {
                 // See if link strength is above 0 for disconnected
                 if (wifiInfo.getLinkSpeed() > 0) {
                     connected = true;
