@@ -7,8 +7,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.util.Log;
 
 public class WifiWidgetProvider extends AppWidgetProvider {
+
+    private final static String TAG = "WifiWidgetProvider";
 
     public static final String UPDATE_WIDGET = "com.alwaystinkering.wifi.UPDATE_WIDGET";
 
@@ -20,6 +23,7 @@ public class WifiWidgetProvider extends AppWidgetProvider {
         ComponentName thisWidget = new ComponentName(context,
                 WifiWidgetProvider.class);
         int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+
         // Build the intent to call the service
         Intent intent = new Intent(context.getApplicationContext(),
                 WifiWidgetService.class);
@@ -32,19 +36,16 @@ public class WifiWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
-        if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION) ||
-                action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION) ||
-                action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION) ||
-                action.equals(UPDATE_WIDGET)) {
 
-            // update all widgets
-            AppWidgetManager appWidgetManager = AppWidgetManager
-                    .getInstance(context);
-            int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
-                    new ComponentName(context, WifiWidgetProvider.class));
-            onUpdate(context, appWidgetManager, appWidgetIds);
-        } else {
-            super.onReceive(context, intent);
-        }
+        Log.d(TAG, "received action: " + action);
+
+        // update all widgets
+        AppWidgetManager appWidgetManager = AppWidgetManager
+                .getInstance(context);
+        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                new ComponentName(context, WifiWidgetProvider.class));
+
+        // Update the widget views
+        onUpdate(context, appWidgetManager, appWidgetIds);
     }
 }

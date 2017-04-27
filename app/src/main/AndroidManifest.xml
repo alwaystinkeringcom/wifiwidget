@@ -22,10 +22,12 @@
         <receiver android:name=".widget.WifiWidgetProvider" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE"/>
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
-                <action android:name="android.net.wifi.STATE_CHANGE"/>
                 <action android:name="com.alwaystinkering.wifi.UPDATE_WIDGET"/>
+                <!-- Actions to update wifi status -->
+                <!--<action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE"/>-->
+                <!--<action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>-->
+                <action android:name="android.net.wifi.STATE_CHANGE"/>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/wifi_widget_info" />

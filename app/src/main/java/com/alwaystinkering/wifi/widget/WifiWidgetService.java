@@ -30,9 +30,10 @@ public class WifiWidgetService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        // Grab a reference to the default shared prefs
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+        // Update the widget views
         updateWidgetView(intent);
 
         stopSelf();
@@ -41,32 +42,30 @@ public class WifiWidgetService extends Service {
 
 
     private void updateWidgetView(Intent intent) {
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService(
-                Context.CONNECTIVITY_SERVICE);
         WifiManager wifiManager = (WifiManager) getApplicationContext()
                 .getSystemService(Context.WIFI_SERVICE);
-        boolean wifiEnabled = wifiManager.isWifiEnabled();
-
-        NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
-        boolean wifiConnected = false;
-        if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-            wifiConnected = true;
-        }
-
-        Log.d(TAG, "WiFi Enabled: " + wifiEnabled + ", WiFi Connected: " + wifiConnected);
-
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        String ssid = "";
+
+        boolean wifiEnabled = wifiManager.isWifiEnabled();
+        boolean wifiConnected = isWifiConnectedToNetwork(wifiInfo);
+
+        Log.v(TAG, "WiFi Enabled: " + wifiEnabled + ", WiFi Connected: " + wifiConnected);
+
+        String ssid = null;
         if (wifiInfo != null && wifiInfo.getSupplicantState() == SupplicantState.COMPLETED) {
             ssid = wifiInfo.getSSID();
             if (ssid != null) {
+                // Get rid of the quotes in the SSID name
                 ssid = ssid.replace("\"", "");
+
+                // If there is no SSID, <unknown ssid> is returned
                 if (ssid.contains("unknown")) {
-                    ssid = "";
+                    ssid = null;
                 }
             }
         }
 
+        // Grab current colors out of prefs if they are available
         int connectedColor = prefs.getInt(getString(R.string.pref_key_wifi_connected_color), 0xff333333);
         int disconnectedColor = prefs.getInt(getString(R.string.pref_key_wifi_disconnected_color), 0xff333333);
         int offColor = prefs.getInt(getString(R.string.pref_key_wifi_off_color), 0xff333333);
@@ -85,7 +84,7 @@ public class WifiWidgetService extends Service {
                     .getApplicationContext().getPackageName(),
                     R.layout.wifi_widget);
 
-            // Set the text
+            // Set the SSID text view
             remoteViews.setTextViewText(R.id.networkText, ssid);
             remoteViews.setInt(R.id.networkText, "setTextColor", textColor);
             remoteViews.setInt(R.id.networkText, "setVisibility", showSsid ? View.VISIBLE : View.GONE);
@@ -94,6 +93,7 @@ public class WifiWidgetService extends Service {
             if (wifiEnabled) {
                 remoteViews.setImageViewResource(R.id.wifiImage,
                         R.drawable.wifi);
+
                 if (wifiConnected) {
                     remoteViews.setInt(R.id.wifiImage, "setColorFilter", connectedColor);
                 } else {
@@ -112,6 +112,23 @@ public class WifiWidgetService extends Service {
 
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
+    }
+
+    private boolean isWifiConnectedToNetwork(WifiInfo wifiInfo) {
+        boolean connected = false;
+
+        if (wifiInfo != null) {
+            Log.d(TAG, "Wifi Info: " + wifiInfo);
+            // Check SSID
+            if (!wifiInfo.getSSID().contains("<unknown ssid>")) {
+                // See if link strength is above 0 for disconnected
+                if (wifiInfo.getLinkSpeed() > 0) {
+                    connected = true;
+                }
+            }
+        }
+
+        return connected;
     }
 
     @Nullable
