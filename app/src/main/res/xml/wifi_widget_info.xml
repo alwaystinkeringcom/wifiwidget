@@ -5,5 +5,7 @@
     android:initialLayout="@layout/wifi_widget"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen|keyguard"
-    android:previewImage="@drawable/wifi">
+    android:previewImage="@drawable/wifi"
+    android:configure="com.alwaystinkering.wifi.WifiConfigurationDialog"
+    >
 </appwidget-provider>

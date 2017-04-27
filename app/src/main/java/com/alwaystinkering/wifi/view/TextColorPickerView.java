@@ -72,6 +72,7 @@ public class TextColorPickerView extends LinearLayout {
                 pickerView.setColor(currentColor);
                 new AlertDialog.Builder(getContext())
                         .setView(pickerView)
+                        .setNegativeButton("Cancel", null)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

@@ -18,7 +18,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import com.alwaystinkering.wifi.R;
-import com.alwaystinkering.wifi.WifiConfiguration;
+import com.alwaystinkering.wifi.WifiConfigurationActivity;
 
 public class WifiWidgetService extends Service {
 
@@ -104,7 +104,7 @@ public class WifiWidgetService extends Service {
             }
 
             // Open configuration on click of the widget
-            Intent configIntent = new Intent(getApplicationContext(), WifiConfiguration.class);
+            Intent configIntent = new Intent(getApplicationContext(), WifiConfigurationActivity.class);
             PendingIntent configPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, configIntent, 0);
             remoteViews.setOnClickPendingIntent(R.id.wifiImage, configPendingIntent);
 
