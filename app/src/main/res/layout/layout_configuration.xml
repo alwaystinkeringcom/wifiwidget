@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.alwaystinkering.wifi.view.ConfigurationView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="Widget Color Configuration"
+
+            />
+        <include
+            android:id="@+id/connectedColorLayout"
+            layout="@layout/layout_icon_color_picker" />
+        <include
+            android:id="@+id/disconnectedColorLayout"
+            layout="@layout/layout_icon_color_picker" />
+        <include
+            android:id="@+id/offColorLayout"
+            layout="@layout/layout_icon_color_picker" />
+        <include
+            android:id="@+id/textColorLayout"
+            layout="@layout/layout_text_color_picker" />
+
+    </LinearLayout>
+</com.alwaystinkering.wifi.view.ConfigurationView>
