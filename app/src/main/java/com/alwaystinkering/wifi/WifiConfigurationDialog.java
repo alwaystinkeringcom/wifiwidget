@@ -1,4 +1,3 @@
-
 package com.alwaystinkering.wifi;
 
 import android.appwidget.AppWidgetManager;
@@ -9,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.alwaystinkering.wifi.util.Log;
 import com.alwaystinkering.wifi.view.ConfigurationView;
 
 public class WifiConfigurationDialog extends AppCompatActivity {
 
+    private static final String TAG = "WifiConfigurationDialog";
     private int widgetId = -1;
 
     @Override
@@ -35,6 +36,8 @@ public class WifiConfigurationDialog extends AppCompatActivity {
                     AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
         }
+
+        Log.d(TAG, "onCreate: widget ID: " + widgetId);
 
         // If this activity was started with an intent without an app widget ID,
         // finish with an error.

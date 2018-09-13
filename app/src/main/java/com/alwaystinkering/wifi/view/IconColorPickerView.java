@@ -1,6 +1,8 @@
 package com.alwaystinkering.wifi.view;
 
 import android.app.AlertDialog;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,7 +10,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +23,6 @@ public class IconColorPickerView extends LinearLayout {
 
     private static final String TAG = "IconColorPickerView";
 
-    private String colorPrefKey;
     private SharedPreferences prefs;
 
     private TextView headerView;
@@ -42,13 +42,12 @@ public class IconColorPickerView extends LinearLayout {
     }
 
     public void initializeView(final String header, final String prompt, final String colorPrefKey, final int drawableResource) {
-        this.colorPrefKey = colorPrefKey;
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         final int currentColor = prefs.getInt(colorPrefKey, 0xff333333);
 
-        headerView = (TextView) findViewById(R.id.headerText);
-        promptText = (TextView) findViewById(R.id.promptText);
-        iconImage = (ImageView) findViewById(R.id.iconImage);
+        headerView = findViewById(R.id.headerText);
+        promptText = findViewById(R.id.promptText);
+        iconImage = findViewById(R.id.iconImage);
 
         headerView.setText(header);
         promptText.setText(prompt);
@@ -78,6 +77,13 @@ public class IconColorPickerView extends LinearLayout {
     }
 
     private void updateWidget() {
-        getContext().sendBroadcast(new Intent(WifiWidgetProvider.UPDATE_WIDGET));
+        Intent intent = new Intent(getContext(), WifiWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        AppWidgetManager appWidgetManager = AppWidgetManager
+                .getInstance(getContext());
+        int ids[] = appWidgetManager.getAppWidgetIds(
+                new ComponentName(getContext(), WifiWidgetProvider.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        getContext().sendBroadcast(intent);
     }
 }

@@ -1,7 +1,8 @@
-
 package com.alwaystinkering.wifi.view;
 
 import android.app.AlertDialog;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,7 +10,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -25,7 +25,6 @@ public class TextColorPickerView extends LinearLayout {
 
     private static final String TAG = "IconColorPickerView";
 
-    private String colorPrefKey;
     private SharedPreferences prefs;
 
     private TextView headerView;
@@ -42,22 +41,21 @@ public class TextColorPickerView extends LinearLayout {
     }
 
     public TextColorPickerView(Context context, @Nullable AttributeSet attrs,
-            int defStyleAttr) {
+                               int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     public void initializeView(final String header, final String prompt,
-            final String checkboxPrefKey, final String colorPrefKey) {
-        this.colorPrefKey = colorPrefKey;
+                               final String checkboxPrefKey, final String colorPrefKey) {
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         final int currentColor = prefs.getInt(colorPrefKey, 0xff333333);
         final boolean checkboxChecked = prefs.getBoolean(checkboxPrefKey, true);
 
-        headerView = (TextView) findViewById(R.id.headerText);
-        promptText = (TextView) findViewById(R.id.promptText);
-        checkBox = (CheckBox) findViewById(R.id.showCheckbox);
-        colorPreview = (ImageView) findViewById(R.id.iconImage);
+        headerView = findViewById(R.id.headerText);
+        promptText = findViewById(R.id.promptText);
+        checkBox = findViewById(R.id.showCheckbox);
+        colorPreview = findViewById(R.id.iconImage);
 
         headerView.setText(header);
         promptText.setText(prompt);
@@ -89,7 +87,7 @@ public class TextColorPickerView extends LinearLayout {
                 new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView,
-                            boolean isChecked) {
+                                                 boolean isChecked) {
                         prefs.edit()
                                 .putBoolean(checkboxPrefKey, isChecked)
                                 .apply();
@@ -99,7 +97,13 @@ public class TextColorPickerView extends LinearLayout {
     }
 
     private void updateWidget() {
-        getContext()
-                .sendBroadcast(new Intent(WifiWidgetProvider.UPDATE_WIDGET));
+        Intent intent = new Intent(getContext(), WifiWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        AppWidgetManager appWidgetManager = AppWidgetManager
+                .getInstance(getContext());
+        int ids[] = appWidgetManager.getAppWidgetIds(
+                new ComponentName(getContext(), WifiWidgetProvider.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        getContext().sendBroadcast(intent);
     }
 }

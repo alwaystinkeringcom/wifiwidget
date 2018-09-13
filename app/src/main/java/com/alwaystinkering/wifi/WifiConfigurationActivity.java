@@ -1,36 +1,28 @@
-
 package com.alwaystinkering.wifi;
 
-import android.appwidget.AppWidgetManager;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.alwaystinkering.wifi.service.WifiJobService;
+import com.alwaystinkering.wifi.util.Log;
 import com.alwaystinkering.wifi.view.ConfigurationView;
-import com.alwaystinkering.wifi.view.IconColorPickerView;
-import com.alwaystinkering.wifi.view.TextColorPickerView;
-import com.alwaystinkering.wifi.widget.WifiWidgetProvider;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
 
 public class WifiConfigurationActivity extends AppCompatActivity {
 
-    private int widgetId = -1;
+    private final static String TAG = "WifiConfigurationActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
+
         setContentView(R.layout.activity_wifi_configuration);
-
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            widgetId = extras.getInt(
-                    AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
-        }
-
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
 
         // Try and hide the action bar
         try {
@@ -39,7 +31,33 @@ public class WifiConfigurationActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        ConfigurationView configurationView = (ConfigurationView) findViewById(R.id.configurationLayout);
+        ConfigurationView configurationView = findViewById(R.id.configurationLayout);
         configurationView.initialize();
+
+        startNetworkChangeJob();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+    }
+
+    public void startNetworkChangeJob() {
+        // Create a new dispatcher using the Google Play driver.
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+
+        Job job = dispatcher.newJobBuilder()
+                .setService(WifiJobService.class)
+                .setTag("wifi-job")
+                .setLifetime(Lifetime.FOREVER)
+                .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
+                .setRecurring(true)
+                .setReplaceCurrent(true)
+                //.setTrigger(Trigger.NOW)
+                .setTrigger(Trigger.executionWindow(0, 0))
+                .build();
+        dispatcher.mustSchedule(job);
+        Log.d(TAG, "Firebase Job Scheduled");
     }
 }

@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.Dialog" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    <style name="AppTheme.Dialog" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
